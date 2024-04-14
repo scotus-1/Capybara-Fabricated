@@ -26,7 +26,7 @@ public class CapybaraAnimalAttractionGoal extends Goal {
     public void start() {
         super.start();
         if(CapybaraModConfig.get().animalAttractionGoal) {
-            for (MobEntity mobEntity : entity.world.getEntitiesByClass(MobEntity.class, entity.getBoundingBox().expand(5), e -> e != entity && e.getVehicle() == null)) {
+            for (MobEntity mobEntity : entity.getWorld().getEntitiesByClass(MobEntity.class, entity.getBoundingBox().expand(5), e -> e != entity && e.getVehicle() == null)) {
                 if (mobEntity.getWidth() <= 0.75f && mobEntity.getHeight() <= 0.75f) {
                     if (mobEntity instanceof TameableEntity mob) {
                         if (mob.isSitting()) {

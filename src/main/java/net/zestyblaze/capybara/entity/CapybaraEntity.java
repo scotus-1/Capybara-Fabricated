@@ -35,11 +35,12 @@ import net.minecraft.screen.ScreenHandler;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
-import net.minecraft.tag.FluidTags;
+import net.minecraft.registry.tag.FluidTags;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Lazy;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.EntityView;
 import net.minecraft.world.World;
 import net.zestyblaze.capybara.entity.ai.CapybaraAnimalAttractionGoal;
 import net.zestyblaze.capybara.registry.CapybaraEntityInit;
@@ -141,7 +142,7 @@ public class CapybaraEntity extends TameableEntity implements NamedScreenHandler
         ItemStack stack = player.getStackInHand(hand);
         Item item = stack.getItem();
 
-        if(!this.world.isClient()) {
+        if(!this.getWorld().isClient()) {
             if (this.isBreedingItem(stack) && this.getHealth() < this.getMaxHealth()) {
                 if (!player.getAbilities().creativeMode) {
                     stack.decrement(1);
@@ -179,12 +180,12 @@ public class CapybaraEntity extends TameableEntity implements NamedScreenHandler
                     this.setOwner(player);
                     this.navigation.stop();
                     this.setTarget(null);
-                    this.world.sendEntityStatus(this, (byte) 7);
+                    this.getWorld().sendEntityStatus(this, (byte) 7);
                 }
                 if (!player.getAbilities().creativeMode) {
                     stack.decrement(1);
                 } else {
-                    this.world.sendEntityStatus(this, (byte) 6);
+                    this.getWorld().sendEntityStatus(this, (byte) 6);
                 }
                 return ActionResult.SUCCESS;
             } else if (!this.isBaby() && this.isTamed()) {
@@ -217,7 +218,7 @@ public class CapybaraEntity extends TameableEntity implements NamedScreenHandler
         this.floatStrider();
         this.checkBlockCollision();
         if(getPassengerList().isEmpty()) {
-            for(Entity e : world.getOtherEntities(this, getBoundingBox().expand(0.5))) {
+            for(Entity e : getWorld().getOtherEntities(this, getBoundingBox().expand(0.5))) {
                 if(e instanceof MobEntity && e.getWidth() <= 0.75f && e.getHeight() <= 0.75 && !this.isBaby() && ((MobEntity)e).getGroup() != EntityGroup.AQUATIC && !isSubmergedInWater()) {
                     e.startRiding(this);
                 }
@@ -245,8 +246,8 @@ public class CapybaraEntity extends TameableEntity implements NamedScreenHandler
     private void floatStrider() {
         if(this.isSubmergedInWater()) {
             ShapeContext shapeContext = ShapeContext.of(this);
-            if(shapeContext.isAbove(FluidBlock.COLLISION_SHAPE, this.getBlockPos(), true) && !this.world.getFluidState(this.getBlockPos().up()).isIn(FluidTags.WATER)) {
-                this.onGround = true;
+            if(shapeContext.isAbove(FluidBlock.COLLISION_SHAPE, this.getBlockPos(), true) && !this.getWorld().getFluidState(this.getBlockPos().up()).isIn(FluidTags.WATER)) {
+                this.setOnGround(true);
             } else {
                 this.setVelocity(this.getVelocity().multiply(0.5d).add(0.0d, 0.05d, 0.0d));
             }
@@ -295,7 +296,7 @@ public class CapybaraEntity extends TameableEntity implements NamedScreenHandler
     protected void dropInventory() {
         super.dropInventory();
         if(getChestCount() > 0) {
-            if(!this.world.isClient) {
+            if(!this.getWorld().isClient) {
                 int c;
                 for(c = 0; c < getChestCount(); c++) {
                     this.dropItem(Blocks.CHEST);
@@ -312,6 +313,18 @@ public class CapybaraEntity extends TameableEntity implements NamedScreenHandler
             }
         }
     }
+
+    @Override
+    public EntityView method_48926() {
+        return this.getWorld();
+    }
+
+    @Nullable
+    @Override
+    public LivingEntity getOwner() {
+        return super.getOwner();
+    }
+
 
     static class WaterPathNavigator extends MobNavigation {
         WaterPathNavigator(CapybaraEntity mobEntity, World world) {

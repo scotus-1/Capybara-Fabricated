@@ -21,20 +21,20 @@
   "environment": "*",
   "entrypoints": {
     "main": [
-      "net.teamdraco.capybara.Capybara"
+      "net.zestyblaze.capybara.Capybara"
     ],
     "client": [
-      "net.teamdraco.capybara.client.CapybaraClient"
+      "net.zestyblaze.capybara.client.CapybaraClient"
     ],
     "modmenu": [
-      "net.teamdraco.capybara.integration.ModMenuIntegration"
+      "net.zestyblaze.capybara.integration.ModMenuIntegration"
     ]
   },
 
   "depends": {
     "fabricloader": ">=0.12.12",
     "fabric": "*",
-    "minecraft": "1.19.x",
+    "minecraft": "1.20.1",
     "java": ">=17",
     "cloth-config2": "*"
   }
